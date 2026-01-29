@@ -154,7 +154,7 @@ def validate_authcode(app_id_hash, auth_code):
         return [ERROR, str(e)]
 
 
-def main():
+def GenerateTOTPToken():
     """Main authentication flow"""
     print("Starting Fyers API authentication...")
     
@@ -162,14 +162,14 @@ def main():
     send_otp_result = send_login_otp(fy_id=FY_ID, app_id=APP_ID_TYPE)
     if send_otp_result[0] != SUCCESS:
         print(f"❌ send_login_otp failure - {send_otp_result[1]}")
-        sys.exit(1)
+        return False
     print("✅ send_login_otp success")
 
     # Step 2 - Generate TOTP
     generate_totp_result = generate_totp(secret=TOTP_KEY)
     if generate_totp_result[0] != SUCCESS:
         print(f"❌ generate_totp failure - {generate_totp_result[1]}")
-        sys.exit(1)
+        return False
     print(f"🔑 Generated TOTP: {generate_totp_result[1]}")
 
     # Step 3 - Verify TOTP
@@ -178,7 +178,7 @@ def main():
     verify_totp_result = verify_totp(request_key=request_key, totp=totp)
     if verify_totp_result[0] != SUCCESS:
         print(f"❌ verify_totp failure - {verify_totp_result[1]}")
-        sys.exit(1)
+        return False
     print("✅ verify_totp success")
 
     # Step 4 - Verify PIN
@@ -186,7 +186,7 @@ def main():
     verify_pin_result = verify_PIN(request_key=request_key_2, pin=PIN)
     if verify_pin_result[0] != SUCCESS:
         print(f"❌ verify_pin failure - {verify_pin_result[1]}")
-        sys.exit(1)
+        return False
     print("✅ verify_pin success")
 
     # Step 5 - Get auth code
@@ -199,7 +199,7 @@ def main():
     )
     if token_result[0] != SUCCESS:
         print(f"❌ token failure - {token_result[1]}")
-        sys.exit(1)
+        return False
     print("✅ token success")
 
     # Step 6 - Validate auth code (FIXED BUG HERE)
@@ -210,7 +210,7 @@ def main():
     )
     if validate_authcode_result[0] != SUCCESS:  # Fixed: was checking token_result
         print(f"❌ validate_authcode failure - {validate_authcode_result[1]}")
-        sys.exit(1)
+        return False
     print("✅ validate_authcode success")
 
     # Save tokens
@@ -230,7 +230,8 @@ def main():
         print('📄 Token saved -> fyers_token.txt')
     
     print(f"\n⏰ Generated on: {dt1.day:02d}-{dt1.month:02d}-{dt1.year} {dt1.hour:02d}:{dt1.minute:02d}:{dt1.second:02d}")
+    return True
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
