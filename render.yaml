@@ -5,4 +5,4 @@ services:
     plan: free
     autoDeploy: false
     buildCommand: pip install -r requirements.txt
-    startCommand: python TOTP.py
+    startCommand: python BOT.py
